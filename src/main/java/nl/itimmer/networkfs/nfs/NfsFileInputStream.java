@@ -52,6 +52,9 @@ public class NfsFileInputStream extends InputStream {
 
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
+        if (fileContext == 0)
+            throw new IOException("Stream is closed");
+
         int ret;
         synchronized (ctx) {
             ret = Nfs.read(ctx.getContext(), fileContext, b, off, len);
@@ -63,6 +66,9 @@ public class NfsFileInputStream extends InputStream {
     }
 
     public long seek(long offset) throws IOException {
+        if (fileContext == 0)
+            throw new IOException("Stream is closed");
+
         long ret;
         synchronized (ctx) {
             ret = Nfs.lseek(ctx.getContext(), fileContext, offset, SEEK_SET);
@@ -74,6 +80,9 @@ public class NfsFileInputStream extends InputStream {
     }
 
     public int readAt(long position, byte[] b, int off, int len) throws IOException {
+        if (fileContext == 0)
+            throw new IOException("Stream is closed");
+
         int ret;
         synchronized (ctx) {
             ret = Nfs.pread(ctx.getContext(), fileContext, position, b, off, len);
@@ -86,8 +95,10 @@ public class NfsFileInputStream extends InputStream {
 
     @Override
     public void close() throws IOException {
-        if (fileContext != 0)
+        if (fileContext != 0) {
             Nfs.close(ctx.getContext(), fileContext);
+            fileContext = 0;
+        }
     }
 
     @Override
