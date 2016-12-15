@@ -29,6 +29,7 @@ public class NfsFile {
     private String path;
     private String name;
     private long size;
+    private boolean isFile;
 
     private NfsContext ctx;
 
@@ -76,6 +77,10 @@ public class NfsFile {
 
     public long getSize() {
         return size;
+    }
+
+    public boolean isFile() {
+        return isFile;
     }
 
     public NfsContext getContext() {

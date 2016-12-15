@@ -22,6 +22,7 @@
 
 #include <stdio.h>
 #include <asm/fcntl.h>
+#include <linux/stat.h>
 
 JNIEXPORT jlong JNICALL Java_nl_itimmer_networkfs_nfs_Nfs_init(JNIEnv *env, jobject this) {
     return (jlong) nfs_init_context();
@@ -61,10 +62,12 @@ JNIEXPORT jboolean JNICALL Java_nl_itimmer_networkfs_nfs_Nfs_readdir(JNIEnv *env
     jclass file_class = (*env)->GetObjectClass(env, file);
     jfieldID file_field = (*env)->GetFieldID(env, file_class, "name", "Ljava/lang/String;");
     jfieldID size_field = (*env)->GetFieldID(env, file_class, "size", "J");
+    jfieldID is_file_field = (*env)->GetFieldID(env, file_class, "isFile", "Z");
 
     jstring name = (*env)->NewStringUTF(env, entry->name);
     (*env)->SetObjectField(env, file, file_field, name);
     (*env)->SetLongField(env, file, size_field, entry->size);
+    (*env)->SetBooleanField(env, file, is_file_field, (entry->mode & S_IFMT) == S_IFREG);
 
     return JNI_TRUE;
 }
