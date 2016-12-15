@@ -45,7 +45,6 @@ public class NfsFile {
                 this.name = path;
                 this.path = File.separator + path;
             }
-            System.out.println(path + " > " + this.path + " / " + this.name);
         }
     }
 
