@@ -1,0 +1,4 @@
+/build
+/src/main/libs
+/.externalNativeBuild
+/*.iml
