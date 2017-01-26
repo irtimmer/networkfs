@@ -66,6 +66,11 @@ public class NfsFile {
         }
     }
 
+    public String getExtension() {
+        int dot = name.lastIndexOf('.');
+        return dot >= 0 ? name.substring(dot + 1) : null;
+    }
+
     public String getName() {
         return name;
     }
