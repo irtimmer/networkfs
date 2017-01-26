@@ -54,6 +54,26 @@ JNIEXPORT jlong JNICALL Java_nl_itimmer_networkfs_nfs_Nfs_opendir(JNIEnv *env, j
     return ret < 0 ? 0 : (jlong) dir;
 }
 
+JNIEXPORT jint JNICALL Java_nl_itimmer_networkfs_nfs_Nfs_stat(JNIEnv *env, jobject this, jlong ctx, jstring jni_path, jobject file) {
+    const char* path = (*env)->GetStringUTFChars(env, jni_path, 0);
+
+    struct nfs_stat_64 st;
+    int ret = nfs_stat64((struct nfs_context*) ctx, path, &st);
+    if (ret < 0)
+        goto finalize;
+
+    jclass file_class = (*env)->GetObjectClass(env, file);
+    jfieldID size_field = (*env)->GetFieldID(env, file_class, "size", "J");
+    jfieldID is_file_field = (*env)->GetFieldID(env, file_class, "isFile", "Z");
+
+    (*env)->SetLongField(env, file, size_field, st.nfs_size);
+    (*env)->SetBooleanField(env, file, is_file_field, (st.nfs_mode & S_IFMT) == S_IFREG);
+
+    finalize:
+    (*env)->ReleaseStringUTFChars(env, jni_path, path);
+    return ret;
+}
+
 JNIEXPORT jboolean JNICALL Java_nl_itimmer_networkfs_nfs_Nfs_readdir(JNIEnv *env, jobject this, jlong ctx, jlong dir, jobject file) {
     struct nfsdirent* entry;
     if ((entry = nfs_readdir((struct nfs_context*) ctx, (struct nfsdir*) dir)) == NULL)

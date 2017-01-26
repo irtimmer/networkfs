@@ -33,7 +33,7 @@ public class NfsFile {
 
     private NfsContext ctx;
 
-    public NfsFile(NfsContext ctx, String path) {
+    public NfsFile(NfsContext ctx, String path) throws IOException {
         this.ctx = ctx;
 
         if (path != null) {
@@ -44,6 +44,12 @@ public class NfsFile {
             } else {
                 this.name = path;
                 this.path = File.separator + path;
+            }
+
+            synchronized (ctx) {
+                int ret = Nfs.stat(ctx.getContext(), this.path, this);
+                if (ret < 0)
+                    throw new IOException("Can't open NFS path: " + path);
             }
         }
     }

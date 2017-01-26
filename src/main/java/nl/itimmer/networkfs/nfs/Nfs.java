@@ -31,6 +31,8 @@ public final class Nfs {
 
     protected static native long opendir(long ctx, String dir);
 
+    protected static native int stat(long ctx, String path, NfsFile file);
+
     protected static native boolean readdir(long ctx, long dir, NfsFile file);
 
     protected static native long open(long ctx, String filename);
